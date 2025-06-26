@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendamento - Minimercado</title>
-    <!-- Bootstrap CSS -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         .horario-btn {
@@ -22,7 +22,7 @@
     <div class="container my-5">
         <h2 class="text-center mb-4">Agendamento</h2>
         
-        <!-- Passo 1: Escolher Serviço -->
+       
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <h5>1. Tipo de Serviço</h5>
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <!-- Passo 2: Escolher Data -->
+        
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <h5>2. Escolha a Data</h5>
@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        <!-- Passo 3: Escolher Horário -->
+       
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <h5>3. Escolha o Horário</h5>
@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        <!-- Botão Finalizar -->
+     
         <div class="d-grid gap-2">
             <button id="btnFinalizar" class="btn btn-success btn-lg" disabled>
                 <i class="bi bi-check-circle"></i> Confirmar Agendamento
@@ -72,19 +72,19 @@
         </div>
     </div>
 
-    <!-- Bootstrap + JS -->
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Variáveis globais
         let dataSelecionada = null;
         let horarioSelecionado = null;
 
-        // 1. Inicializa o calendário (simulado)
+        
         document.addEventListener('DOMContentLoaded', function() {
             const hoje = new Date();
             const calendarioHTML = document.getElementById('calendario');
             
-            // Simulação de calendário (para implementação real, use uma biblioteca como Flatpickr)
+            
             calendarioHTML.innerHTML = `
                 <div class="d-flex flex-wrap">
                 <p>Datas disponíveis (exemplo):</p>
@@ -102,18 +102,17 @@
                 </div>
             `;
 
-            // Ouvintes de eventos
+            
             document.querySelectorAll('.data-btn').forEach(btn => {
                 btn.addEventListener('click', selecionarData);
             });
         });
 
-        // 2. Função para selecionar data
+     
         function selecionarData(e) {
             dataSelecionada = e.target.dataset.date;
             document.getElementById('dataSelecionada').value = dataSelecionada;
             
-            // Atualiza UI
             document.querySelectorAll('.data-btn').forEach(btn => {
                 btn.classList.remove('btn-primary');
                 btn.classList.add('btn-outline-primary');
@@ -121,16 +120,16 @@
             e.target.classList.remove('btn-outline-primary');
             e.target.classList.add('btn-primary');
 
-            // Carrega horários
+         
             carregarHorarios();
         }
 
-        // 3. Função para carregar horários disponíveis
+        
         function carregarHorarios() {
             const container = document.getElementById('horarios-container');
             const tipoServico = document.querySelector('input[name="tipoServico"]:checked').id;
             
-            // Horários diferentes para retirada vs entrega
+            
             const horarios = tipoServico === 'retirada' 
                 ? ['09:00', '11:00', '14:00', '16:00', '18:00']
                 : ['10:00-12:00', '14:00-16:00', '17:00-19:00'];
@@ -145,17 +144,17 @@
                 </div>
             `;
 
-            // Adiciona ouvintes de eventos aos botões de horário
+          
             document.querySelectorAll('.horario-btn').forEach(btn => {
                 btn.addEventListener('click', selecionarHorario);
             });
         }
 
-        // 4. Função para selecionar horário
+       
         function selecionarHorario(e) {
             horarioSelecionado = e.target.dataset.horario;
             
-            // Atualiza UI
+            
             document.querySelectorAll('.horario-btn').forEach(btn => {
                 btn.classList.remove('btn-primary');
                 btn.classList.add('btn-outline-secondary');
@@ -163,11 +162,10 @@
             e.target.classList.remove('btn-outline-secondary');
             e.target.classList.add('btn-primary');
 
-            // Ativa botão de finalizar
             document.getElementById('btnFinalizar').disabled = false;
         }
 
-        // 5. Ouvinte para mudança no tipo de serviço
+        
         document.querySelectorAll('input[name="tipoServico"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 if (dataSelecionada) {
@@ -176,7 +174,6 @@
             });
         });
 
-        // 6. Finalizar agendamento
         document.getElementById('btnFinalizar').addEventListener('click', function() {
             const tipoServico = document.querySelector('input[name="tipoServico"]:checked').id;
             
