@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento - Minimercado</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .horario-btn {
+            margin: 5px;
+            width: 80px;
+        }
+        #calendario {
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Agendamento</h2>
+        
+        <!-- Passo 1: Escolher Serviço -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5>1. Tipo de Serviço</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="tipoServico" id="retirada" checked>
+                    <label class="form-check-label" for="retirada">
+                        <i class="bi bi-basket"></i> Retirada no Local
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="tipoServico" id="entrega">
+                    <label class="form-check-label" for="entrega">
+                        <i class="bi bi-truck"></i> Tele-entrega (Taxa: R$ 5,00)
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passo 2: Escolher Data -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5>2. Escolha a Data</h5>
+            </div>
+            <div class="card-body">
+                <div id="calendario" class="mb-3"></div>
+                <input type="hidden" id="dataSelecionada">
+            </div>
+        </div>
+
+        <!-- Passo 3: Escolher Horário -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5>3. Escolha o Horário</h5>
+            </div>
+            <div class="card-body" id="horarios-container">
+                <p class="text-muted">Selecione uma data primeiro</p>
+            </div>
+        </div>
+
+        <!-- Botão Finalizar -->
+        <div class="d-grid gap-2">
+            <button id="btnFinalizar" class="btn btn-success btn-lg" disabled>
+                <i class="bi bi-check-circle"></i> Confirmar Agendamento
+            </button>
+        </div>
+    </div>
+
+    <!-- Bootstrap + JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variáveis globais
+        let dataSelecionada = null;
+        let horarioSelecionado = null;
+
+        // 1. Inicializa o calendário (simulado)
+        document.addEventListener('DOMContentLoaded', function() {
+            const hoje = new Date();
+            const calendarioHTML = document.getElementById('calendario');
+            
+            // Simulação de calendário (para implementação real, use uma biblioteca como Flatpickr)
+            calendarioHTML.innerHTML = `
+                <div class="d-flex flex-wrap">
+                <p>Datas disponíveis (exemplo):</p>
+                
+                    ${[0, 1, 2, 3].map(dias => {
+                        const data = new Date();
+                        data.setDate(hoje.getDate() + dias);
+                        return `
+                            <button class="btn btn-outline-primary m-1 data-btn" 
+                                    data-date="${data.toISOString().split('T')[0]}">
+                                ${data.toLocaleDateString('pt-BR')}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            // Ouvintes de eventos
+            document.querySelectorAll('.data-btn').forEach(btn => {
+                btn.addEventListener('click', selecionarData);
+            });
+        });
+
+        // 2. Função para selecionar data
+        function selecionarData(e) {
+            dataSelecionada = e.target.dataset.date;
+            document.getElementById('dataSelecionada').value = dataSelecionada;
+            
+            // Atualiza UI
+            document.querySelectorAll('.data-btn').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+            });
+            e.target.classList.remove('btn-outline-primary');
+            e.target.classList.add('btn-primary');
+
+            // Carrega horários
+            carregarHorarios();
+        }
+
+        // 3. Função para carregar horários disponíveis
+        function carregarHorarios() {
+            const container = document.getElementById('horarios-container');
+            const tipoServico = document.querySelector('input[name="tipoServico"]:checked').id;
+            
+            // Horários diferentes para retirada vs entrega
+            const horarios = tipoServico === 'retirada' 
+                ? ['09:00', '11:00', '14:00', '16:00', '18:00']
+                : ['10:00-12:00', '14:00-16:00', '17:00-19:00'];
+
+            container.innerHTML = `
+                <div class="d-flex flex-wrap">
+                    ${horarios.map(horario => `
+                        <button class="btn btn-outline-secondary horario-btn" data-horario="${horario}">
+                            ${horario}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+
+            // Adiciona ouvintes de eventos aos botões de horário
+            document.querySelectorAll('.horario-btn').forEach(btn => {
+                btn.addEventListener('click', selecionarHorario);
+            });
+        }
+
+        // 4. Função para selecionar horário
+        function selecionarHorario(e) {
+            horarioSelecionado = e.target.dataset.horario;
+            
+            // Atualiza UI
+            document.querySelectorAll('.horario-btn').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-secondary');
+            });
+            e.target.classList.remove('btn-outline-secondary');
+            e.target.classList.add('btn-primary');
+
+            // Ativa botão de finalizar
+            document.getElementById('btnFinalizar').disabled = false;
+        }
+
+        // 5. Ouvinte para mudança no tipo de serviço
+        document.querySelectorAll('input[name="tipoServico"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (dataSelecionada) {
+                    carregarHorarios();
+                }
+            });
+        });
+
+        // 6. Finalizar agendamento
+        document.getElementById('btnFinalizar').addEventListener('click', function() {
+            const tipoServico = document.querySelector('input[name="tipoServico"]:checked').id;
+            
+            alert(`Agendamento confirmado!\n
+                Serviço: ${tipoServico === 'retirada' ? 'Retirada' : 'Tele-entrega'}\n
+                Data: ${new Date(dataSelecionada).toLocaleDateString('pt-BR')}\n
+                Horário: ${horarioSelecionado}\n
+                ${tipoServico === 'entrega' ? 'Taxa de entrega: R$ 5,00' : ''}`);
+        });
+    </script>
+</body>
+</html>
